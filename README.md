@@ -1,53 +1,77 @@
-# Dependency Version Checker
-
-This library allows you to run a check for newer versions against your development and production dependencies, both npm and `git://`/`git+ssh://`.
+# npm-dep-mgr
 
 ## Motivation
-Internal libraries or other dependencies should be as easy to verify as those published to npm. And you should have one tool for that.
 
-## Prerequisites
-For git, if you're able to clone the repo, you're able to check the tags.
-
-For npm, there's no support for custom, manual repositories. If you're using custom repository, make it work without any additional parameters. 
-
-Configure your npm, git and ssh if you have private repos.
+You should have a wicked fast and lightweight tool for checking dependency versions and keeping them up-to-date.
 
 ## Disclaimer
-This is "for dev by dev" tool. They may be some assumptions made, so do not hesitate to look into verbose logs if something seems not right.
 
-Still, I'll try to list all assumptions in this file.
-* Tags are in semver, if they do not pass semver parsing they do not show in the list.   
+- Tags are in semver, if they do not parse semver they do not show.
 
 ## Installation
-`npm install -g dependency-version-checker`
+
+`npm install -g npm-dep-mgr`
+
+Or don't install it, I don't. It gets installed "on demand" via NPM scripts in my package.json only when I want to run it:
+
+```json
+{
+  "scripts": {
+    "versions": "npx npm-dep-mgr check",
+    "versions:fix": "npx npm-dep-mgr update"
+  }
+}
+```
 
 ## Usage
+
 Run in your project (you do not need to be exactly in root):
 
+```sh
+npm-dep-mgr --help
+npm-dep-mgr check [rule] //checks dependencies and prints them in table
+npm-dep-mgr update [rule] //checks dependencies and update them in package.json
 ```
-dep-versions --help
-dep-versions check [rule] //checks dependencies and prints them in table
-dep-versions update [rule] //checks dependencies and update them in found package.json
+
+### Rule parameter
+
+- Rule parameter is a string by which successful match against the dependencies.
+- Rule parameter may be omitted, but check will be executed against all the dependencies.
+
+#### Checking
+
+```sh
+$ npm-dep-mgr check sem
+Checking dependencies in: /Users/matt/git/dependency-version-checker/package.json.
+	matching this regex: /sem/.
+
+Dependency  Type  Current Version  Latest Minor  Latest Major  Changed to
+==========  ====  ===============  ============  ============  ==========
+semver      Prod  7.0.0            7.7.4         -
 ```
 
-#### Rule parameter
-* Rule parameter is a string by which successful match against the dependencies.
-* Rule parameter may be omitted, but check will be executed against all the dependencies.
-  
-#### Example
+#### Updating
 
-```
-$dep-versions check lod
-Performing dependency updates check for project: D:\Documents\Projects\depdency-version-checker\spec\package.json.
-Check will be performed for dependencies matching this regex: /lod/.
+```sh
+$ npm-dep-mgr update sem
+Updating dependencies in: /Users/matt/git/dependency-version-checker/package.json.
+	matching this regex: /sem/.
 
-You could update 1 dependency(/-ies).
+Dependency  Type  Current Version  Latest Minor  Latest Major  Changed to
+==========  ====  ===============  ============  ============  ==========
+semver      Prod  7.0.0            7.7.4         -             7.7.4
 
-Dependency  Type  Current Version  Latest Minor  Latest Major  
-==========  ====  ===============  ============  ============  
-lodash      Prod  3.0.0            3.10.1        4.17.11     
+Remember to run 'npm install' to install the dependencies.
 ```
 
 #### Debugging
 
-Run `dep-versions <command> --help` to see additional flags.
+Run `npm-dep-mgr <command> --help` to see additional flags.
+
+## History
+
+- Forked from [https://github.com/tmakuch/dependency-version-checker](https://github.com/tmakuch/dependency-version-checker) in 2026 when it was abandoned.
+  - Ripped out all the dependencies except semver
+  - refactored as modern ESNEXT app
+- Considered [npm-check-updates](https://www.npmjs.com/package/npm-check-updates) but can't get past the 6.86 MB download!
+- Oh how I wish `npm outdated` worked
