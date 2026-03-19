@@ -1,34 +1,32 @@
 {
-  "name": "@msimerson/dependency-version-checker",
-  "version": "1.1.2",
+  "name": "@msimerson/npm-dep-mgr",
+  "version": "2.0.0",
   "description": "Check for newer versions of dependencies.",
   "main": "src/logic.js",
   "bin": {
-    "dep-versions": "cli.js"
+    "npm-dep-mgr": "cli.js"
   },
+  "files": [
+    "src",
+    "cli.js"
+  ],
   "scripts": {
-    "test": "jasmine"
+    "prettier": "npx prettier --ignore-path .gitignore --check .",
+    "prettier:fix": "npx prettier --ignore-path .gitignore --write .",
+    "test": "node --test test/*.*js"
   },
   "author": "Tadeusz Makuch",
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.5.4",
-    "concat-stream": "^2.0.0",
-    "ora": "^5.4.1",
-    "semver": "^6.3.1",
-    "spawn-shell": "^2.1.0",
-    "yargs": "^15.4.1"
+    "semver": "^7.7.4"
   },
   "directories": {
     "lib": "src",
     "test": "test"
   },
-  "devDependencies": {
-    "jasmine": "^3.99.0"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/msimerson/dependency-version-checker.git"
+    "url": "git+https://github.com/msimerson/npm-dep-mgr.git"
   },
   "keywords": [
     "git",
@@ -38,7 +36,12 @@
     "updates"
   ],
   "bugs": {
-    "url": "https://github.com/msimerson/dependency-version-checker/issues"
+    "url": "https://github.com/msimerson/npm-dep-mgr/issues"
   },
-  "homepage": "https://www.npmjs.com/package/@msimerson/dependency-version-checker"
+  "homepage": "https://www.npmjs.com/package/@msimerson/npm-dep-mgr",
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all"
+  }
 }

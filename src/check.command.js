@@ -1,100 +1,88 @@
-const logic = require("./logic");
-const selfCheck = require("./cliHelpers/selfCheck");
-const drawTable = require("./cliHelpers/drawCliTable");
-const p = require("bluebird");
-const loggerInit = require("./cliHelpers/logger");
-const commons = require("./commandsCommons");
+const logic = require('./logic')
+const { selfCheck, drawTable, loggerInit } = require('./cliHelpers.js')
+const helpers = require('./helpers.js')
 
 module.exports = {
-    command: "check [rule]",
-    describe: "Check all dependencies for updates",
-    builder: Object.assign(
-        {
-            "no-self-check": {
-                type: "boolean",
-                description: "Omits version check for this code"
-            },
-            "hide-empty": {
-                type: "boolean",
-                description: "Hide entries that are up to date"
-            }
-        },
-        commons.options
-    ),
-    handler
-};
+  command: 'check [rule]',
+  describe: 'Check all dependencies for updates',
+  builder: {
+    'no-self-check': {
+      type: 'boolean',
+      description: 'Omits version check for this code',
+    },
+    'hide-empty': {
+      type: 'boolean',
+      description: 'Hide entries that are up to date',
+    },
+  },
+  handler,
+}
 
-function handler(yargs) {
-    const logger = loggerInit(yargs);
-    return selfCheck(yargs)
-        .then(() => {
-            logger.log(
-                `Performing dependency updates check for project: ${
-                    yargs.packagePath
-                }.`
-            );
-            logger.log(
-                `Check will be performed for dependencies matching this regex: /${
-                    yargs.rule
-                }/.\n`
-            );
+async function handler(yargs) {
+  const logger = loggerInit(yargs)
+  try {
+    if (
+      (yargs.ignoreMinor && yargs.ignoreMajor) ||
+      (yargs.ignoreProd && yargs.ignoreDev)
+    ) {
+      logger.error(
+        "Wait, what do you want from me?\nCheck --help for list of right arguments - you've provided excluding filters.",
+      )
+      return process.exit(-1)
+    }
 
-            return p.props({
-                spinnerInstance:
-                    logger.spinner &&
-                    logger.spinner.start("Getting dependencies versions."),
-                dependencies: logic.findPackagesToUpdate(
-                    yargs.packagePath,
-                    yargs.rule,
-                    yargs
-                )
-            });
-        })
-        .then(({ spinnerInstance, dependencies }) => {
-            if (spinnerInstance) {
-                spinnerInstance.stop();
-            }
+    logger.log(`Checking dependencies in: ${yargs.packagePath}.`)
+    if (yargs.rule !== '.*') {
+      logger.log(`\tmatching this regex: /${yargs.rule}/.\n`)
+    }
 
-            let visible = dependencies;
+    const dependencies = await logic.findPackagesToUpdate(
+      yargs.packagePath,
+      yargs.rule,
+      yargs,
+    )
 
-            if (yargs.hideErrors) {
-                visible = dependencies.filter(dep => !dep.error);
-                logger.log(
-                    `${dependencies.length -
-                        visible.length} error(s) were hidden.`
-                );
-            }
+    let filtered = dependencies
 
-            const nonEmpty = visible.filter(
-                dep => dep.latestMinor || dep.latestMajor || dep.error
-            );
+    if (yargs.hideErrors) {
+      filtered = filtered.filter((dep) => !dep.error)
+      logger.log(
+        `${dependencies.length - filtered.length} error(s) were hidden.`,
+      )
+    }
 
-            const updates = nonEmpty.filter(
-                dep => dep.latestMinor || dep.latestMajor
-            );
-            if (!updates.length) {
-                logger.log("Awesome, all your dependencies are up to date!");
-            } else {
-                logger.log(
-                    `You could update ${updates.length} dependency(/-ies).`
-                );
-            }
+    if (yargs.hideUnchanged) {
+      const before = filtered.length
+      filtered = filtered.filter((dep) => dep.updatedTo || dep.error)
+      logger.log(
+        `${before - filtered.length} unchanged dependenct(-ies) were hidden.`,
+      )
+    }
 
-            logger.log();
-            drawTable({
-                headers: {
-                    name: "Dependency",
-                    type: "Type",
-                    currentVersion: "Current Version",
-                    latestMinor: "Latest Minor",
-                    latestMajor: "Latest Major"
-                },
-                customEntry: {
-                    fromColumn: 2,
-                    getter: entry => entry.error
-                },
-                data: yargs.hideEmpty ? nonEmpty : visible
-            });
-        })
-        .catch(logger.error);
+    if (yargs.hideIgnored) {
+      const before = filtered.length
+      filtered = filtered.filter((dep) => !dep.ignored)
+      logger.log(
+        `${before - filtered.length} ignored dependency(-ies) were hidden.`,
+      )
+    }
+
+    drawTable({
+      headers: {
+        name: 'Dependency',
+        type: 'Type',
+        currentVersion: 'Current Version',
+        latestMinor: 'Latest Minor',
+        latestMajor: 'Latest Major',
+        updatedTo: 'Changed to',
+      },
+      customEntry: {
+        fromColumn: 2,
+        getter: (entry) => entry.error,
+      },
+      data: filtered,
+    })
+  } catch (err) {
+    logger.error(err)
+  }
 }
