@@ -1,5 +1,5 @@
 {
-  "name": "@msimerson/npm-dep-mgr",
+  "name": "npm-dep-mgr",
   "version": "2.0.0",
   "description": "Check for newer versions of dependencies.",
   "main": "src/logic.js",
@@ -38,7 +38,7 @@
   "bugs": {
     "url": "https://github.com/msimerson/npm-dep-mgr/issues"
   },
-  "homepage": "https://www.npmjs.com/package/@msimerson/npm-dep-mgr",
+  "homepage": "https://www.npmjs.com/package/npm-dep-mgr",
   "prettier": {
     "semi": false,
     "singleQuote": true,
