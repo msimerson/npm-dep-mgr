@@ -29,8 +29,8 @@ Run in your project (you do not need to be exactly in root):
 
 ```sh
 npm-dep-mgr --help
-npm-dep-mgr check [rule] //checks dependencies and prints them in table
-npm-dep-mgr update [rule] //checks dependencies and update them in package.json
+npm-dep-mgr check [rule] # checks dependencies
+npm-dep-mgr update [rule] # updates dependencies in package.json
 ```
 
 ### Rule parameter
