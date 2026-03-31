@@ -1,5 +1,13 @@
 # Changelog
 
+
+- fix: optional dependency support 
+
+### Unreleased
+
+### [2.0.2] - 2026-03-31
+
+
 ## 2.0.0 - 2026-03-18
 
 - deps: removed all but semver
@@ -40,3 +48,4 @@
 - `dep=versions update` command to save the updates in package.json.
 - `dep-versions check` perform self-check (use `--no-self-check` to omit it).
 - `--silent` to hide everything that's not table with results.
+[2.0.2]: https://github.com/msimerson/npm-dep-mgr/releases/tag/v2.0.2
