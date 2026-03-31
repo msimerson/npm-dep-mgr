@@ -11,6 +11,8 @@ jobs:
   ubuntu:
     needs: [get-lts]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         node-version: ${{ fromJson(needs.get-lts.outputs.lts) }}
@@ -27,6 +29,8 @@ jobs:
   node-current:
     needs: [get-lts]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         node-version: ${{ fromJson(needs.get-lts.outputs.current) }}
@@ -44,6 +48,8 @@ jobs:
 
   get-lts:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - id: get
         uses: msimerson/node-lts-versions@v1
