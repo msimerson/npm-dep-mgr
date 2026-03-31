@@ -43,6 +43,7 @@ module.exports = {
 const depContainerNames = {
   [DEP_TYPE.PROD]: 'dependencies',
   [DEP_TYPE.DEV]: 'devDependencies',
+  [DEP_TYPE.OPT]: 'optionalDependencies',
 }
 
 async function handler(yargs) {
@@ -71,7 +72,8 @@ async function handler(yargs) {
     for (const dependency of dependencies) {
       if (
         (dependency.type === DEP_TYPE.DEV && yargs.ignoreDev) ||
-        (dependency.type === DEP_TYPE.PROD && yargs.ignoreProd)
+        (dependency.type === DEP_TYPE.PROD && yargs.ignoreProd) ||
+        (dependency.type === DEP_TYPE.OPT && yargs.ignoreOpt)
       ) {
         dependency.ignored = true
         dependency.updatedTo = 'Ignored by type'
@@ -96,6 +98,10 @@ async function handler(yargs) {
       dependency.updatedTo = nextVersion
 
       const container = depContainerNames[dependency.type]
+      if (container === undefined) {
+        console.log(`missing ${container} in package.json`)
+        continue
+      }
       packageJson[container][dependency.name] = packageJson[container][
         dependency.name
       ].replace(dependency.currentVersion, nextVersion)
