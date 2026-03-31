@@ -17,7 +17,7 @@
     "versions": "npx npm-dep-mgr check",
     "versions:fix": "npx npm-dep-mgr update",
     "test:coverage": "npx c8 --reporter=text --reporter=text-summary npm test",
-    "format": "npm run prettier:fix && npm run lint:fix"
+    "format": "npm run prettier:fix"
   },
   "author": "Tadeusz Makuch",
   "license": "MIT",
