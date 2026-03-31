@@ -1,6 +1,6 @@
 {
   "name": "npm-dep-mgr",
-  "version": "2.0.2",
+  "version": "2.0.1",
   "description": "Check for newer versions of dependencies.",
   "main": "src/logic.js",
   "bin": {
@@ -15,7 +15,9 @@
     "prettier:fix": "npx prettier --ignore-path .gitignore --write .",
     "test": "node --test test/*.*js",
     "versions": "npx npm-dep-mgr check",
-    "versions:fix": "npx npm-dep-mgr update"
+    "versions:fix": "npx npm-dep-mgr update",
+    "test:coverage": "npx c8 --reporter=text --reporter=text-summary npm test",
+    "format": "npm run prettier:fix && npm run lint:fix"
   },
   "author": "Tadeusz Makuch",
   "license": "MIT",
