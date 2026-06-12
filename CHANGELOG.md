@@ -4,15 +4,8 @@
 
 ### [2.0.3] - 2026-06-12
 
-#### Changed
-
-- add explicit perms (#5) (#6)
-- add explicit perms (#5)
-
-#### Other
-
-- Release v2.0.2 (#4)
-
+- fix: add newline when writing package.json
+- ci: add explicit perms (#5) (#6)
 
 ### [2.0.2] - 2026-03-31
 

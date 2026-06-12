@@ -107,7 +107,10 @@ async function handler(yargs) {
       ].replace(dependency.currentVersion, nextVersion)
     }
 
-    await fs.writeFile(yargs.packagePath, JSON.stringify(packageJson, null, 2))
+    await fs.writeFile(
+      yargs.packagePath,
+      JSON.stringify(packageJson, null, 2) + '\n',
+    )
 
     let filtered = dependencies
 
