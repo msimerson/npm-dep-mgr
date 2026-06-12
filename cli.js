@@ -26,6 +26,7 @@ function printHelp() {
   )
   console.log(`  --ignore-dev         Do not update devDependencies`)
   console.log(`  --ignore-prod        Do not update prod dependencies`)
+  console.log(`  --ignore-opt         Do not update optional dependencies`)
   console.log(`  --hide-ignored       Hide ignored dependencies`)
   console.log(`  --hide-unchanged     Hide unchanged dependencies`)
   console.log(`  --help               Show this help message`)
@@ -45,7 +46,9 @@ function parseArgs(argv) {
         i++
       }
     } else if (arg.startsWith('--')) {
-      const key = arg.replace(/^--/, '')
+      const key = arg
+        .replace(/^--/, '')
+        .replace(/-([a-z])/g, (_, c) => c.toUpperCase())
       let value = true
       if (args[i + 1] && !args[i + 1].startsWith('--')) {
         value = args[i + 1]
@@ -89,4 +92,8 @@ function main() {
   }
 }
 
-main()
+if (require.main === module) {
+  main()
+}
+
+module.exports = { parseArgs }

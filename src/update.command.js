@@ -28,6 +28,10 @@ module.exports = {
       description:
         "Does not update prod dependencies. Can't be used with --ignore-dev",
     },
+    'ignore-opt': {
+      type: 'boolean',
+      description: 'Does not update optional dependencies',
+    },
     'hide-ignored': {
       type: 'boolean',
       description: 'Hide ignored dependencies',

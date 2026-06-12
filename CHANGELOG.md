@@ -2,6 +2,13 @@
 
 ### Unreleased
 
+- fix: CLI flags were ignored (kebab-case args now map to camelCase options)
+- fix: broken self-check caused by circular require between logic and cliHelpers
+- fix(security): remove ReDoS-prone regex in getGitUrl
+- fix(security): use execFile to avoid shell injection in e2e test
+- feat: add --ignore-opt to skip optional dependencies
+- test: expand coverage from 68% to 92%
+
 ### [2.0.3] - 2026-06-12
 
 - fix: add newline when writing package.json

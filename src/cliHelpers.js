@@ -1,8 +1,6 @@
 const path = require('node:path')
 const exists = require('node:fs').existsSync
 
-const logic = require('./logic')
-
 function drawTable({ headers, customEntry, data }) {
   const columns = Object.entries(getColumns(data.concat(headers))).reduce(
     (result, [columnName, columnWidth]) => {
@@ -94,6 +92,7 @@ function selfCheck(options) {
   if (options.selfCheck === false || options.silent) {
     return
   }
+  const logic = require('./logic')
   const dvcPackageInfo = require('../package.json')
   const logger = loggerInit(options)
   return logic

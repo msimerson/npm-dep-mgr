@@ -3,16 +3,19 @@ name: CI
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches: [main, master]
 
 env:
   CI: true
+
+permissions:
+  contents: read
 
 jobs:
   ubuntu:
     needs: [get-lts]
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     strategy:
       matrix:
         node-version: ${{ fromJson(needs.get-lts.outputs.lts) }}
@@ -29,8 +32,6 @@ jobs:
   node-current:
     needs: [get-lts]
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     strategy:
       matrix:
         node-version: ${{ fromJson(needs.get-lts.outputs.current) }}
@@ -48,8 +49,6 @@ jobs:
 
   get-lts:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - id: get
         uses: msimerson/node-lts-versions@v1
