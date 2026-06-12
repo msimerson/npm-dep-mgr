@@ -7,12 +7,27 @@ const silentLogger = { debug() {} }
 
 describe('spawn', () => {
   test('resolves with stdout for a successful command', async () => {
-    const out = await helpers.spawn('echo hello', silentLogger)
+    const out = await helpers.spawn(
+      process.execPath,
+      ['-e', 'process.stdout.write("hello")'],
+      silentLogger,
+    )
     assert.match(out, /hello/)
   })
 
   test('rejects when the command exits non-zero', async () => {
-    await assert.rejects(helpers.spawn('exit 3', silentLogger))
+    await assert.rejects(
+      helpers.spawn(process.execPath, ['-e', 'process.exit(3)'], silentLogger),
+    )
+  })
+
+  test('does not interpret shell metacharacters in arguments', async () => {
+    const out = await helpers.spawn(
+      process.execPath,
+      ['-e', 'process.stdout.write(process.argv[1])', '; echo pwned'],
+      silentLogger,
+    )
+    assert.equal(out, '; echo pwned')
   })
 })
 

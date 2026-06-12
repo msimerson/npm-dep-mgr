@@ -8,6 +8,7 @@
 - fix: broken self-check caused by circular require between logic and cliHelpers
 - fix(security): remove ReDoS-prone regex in getGitUrl
 - fix(security): use execFile to avoid shell injection in e2e test
+- fix(security): drop shell when spawning git/npm to prevent command injection from package.json
 - feat: add --ignore-opt to skip optional dependencies
 - test: expand coverage from 68% to 92%
 - fix: add newline when writing package.json

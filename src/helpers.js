@@ -1,9 +1,8 @@
 const { spawn } = require('node:child_process')
 
-function spawnMinions(command, logger) {
-  logger.debug(`Running '${command}'.`)
-  const childProcess = spawn(command, {
-    shell: true,
+function spawnMinions(command, args, logger) {
+  logger.debug(`Running '${command} ${args.join(' ')}'.`)
+  const childProcess = spawn(command, args, {
     stdio: ['ignore', 'pipe', 'pipe'],
     env: process.env,
   })
@@ -76,13 +75,18 @@ async function getGitTags(dependency, logger) {
   const gitUrl = getGitUrl(dependency)
   logger.debug(`"${dependency.name}" is on ${gitUrl}.`)
   const response = await spawnMinions(
-    `git ls-remote --tags --refs --sort="-v:refname" ${gitUrl}`,
+    'git',
+    ['ls-remote', '--tags', '--refs', '--sort=-v:refname', gitUrl],
     logger,
   )
   return parseLsRemoteResponse(response)
 }
 
 // --- npmTags.js ---
+function npmExecutable() {
+  return process.platform === 'win32' ? 'npm.cmd' : 'npm'
+}
+
 function parseNpmResponse(result) {
   let stripped = result.replace(/\x1B\[[0-9;]*m/g, '').replace(/'/g, '"')
   if (!/\[/.test(stripped)) stripped = `[ ${stripped.trim()} ]`
@@ -94,8 +98,11 @@ function parseNpmResponse(result) {
 }
 
 async function getNpmTags(dependency, logger) {
-  const command = `npm view ${dependency.name} versions --json`
-  const result = await spawnMinions(command, logger)
+  const result = await spawnMinions(
+    npmExecutable(),
+    ['view', dependency.name, 'versions', '--json'],
+    logger,
+  )
   return parseNpmResponse(result)
 }
 
