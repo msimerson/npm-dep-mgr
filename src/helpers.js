@@ -59,7 +59,7 @@ function spawnMinions(command, logger) {
 
 // --- gitTags.js ---
 function getGitUrl(dependency) {
-  return dependency.version.replace(/#semver:[^\s]+$/, '')
+  return dependency.version.split('#semver:')[0]
 }
 
 function parseLsRemoteResponse(response) {

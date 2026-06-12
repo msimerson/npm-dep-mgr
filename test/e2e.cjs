@@ -1,6 +1,6 @@
 // Run with: node --test test/e2e-basic.test.js
 
-const { exec } = require('node:child_process')
+const { execFile } = require('node:child_process')
 const assert = require('node:assert').strict
 const path = require('node:path')
 const fs = require('node:fs')
@@ -12,8 +12,9 @@ const PKG_PATH = path.join(TEST_TMP, 'package.json')
 
 function runCli(args = '', opts = {}) {
   return new Promise((resolve, reject) => {
-    exec(
-      `node ${CLI_PATH} ${args}`,
+    execFile(
+      process.execPath,
+      [CLI_PATH, ...args.split(' ').filter(Boolean)],
       { cwd: TEST_TMP, ...opts },
       (err, stdout, stderr) => {
         resolve({ err, stdout, stderr })
