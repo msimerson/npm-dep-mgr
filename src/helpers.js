@@ -76,7 +76,7 @@ async function getGitTags(dependency, logger) {
   logger.debug(`"${dependency.name}" is on ${gitUrl}.`)
   const response = await spawnMinions(
     'git',
-    ['ls-remote', '--tags', '--refs', '--sort=-v:refname', gitUrl],
+    ['ls-remote', '--tags', '--refs', '--sort=-v:refname', '--', gitUrl],
     logger,
   )
   return parseLsRemoteResponse(response)
@@ -100,7 +100,7 @@ function parseNpmResponse(result) {
 async function getNpmTags(dependency, logger) {
   const result = await spawnMinions(
     npmExecutable(),
-    ['view', dependency.name, 'versions', '--json'],
+    ['view', '--json', '--', dependency.name, 'versions'],
     logger,
   )
   return parseNpmResponse(result)

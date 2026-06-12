@@ -1,4 +1,7 @@
 const assert = require('node:assert/strict')
+const path = require('node:path')
+const os = require('node:os')
+const fs = require('node:fs')
 const { test, describe } = require('node:test')
 
 const helpers = require('../src/helpers.js')
@@ -28,6 +31,23 @@ describe('spawn', () => {
       silentLogger,
     )
     assert.equal(out, '; echo pwned')
+  })
+})
+
+describe('getGitTags argument injection', () => {
+  test('a malicious git url cannot inject git options', async () => {
+    const marker = path.join(os.tmpdir(), `pwned-${process.pid}`)
+    fs.rmSync(marker, { force: true })
+    await assert.rejects(
+      helpers.getGitTags(
+        {
+          name: 'evil',
+          version: `--upload-pack=touch ${marker}#semver:^1.0.0`,
+        },
+        silentLogger,
+      ),
+    )
+    assert.equal(fs.existsSync(marker), false)
   })
 })
 
