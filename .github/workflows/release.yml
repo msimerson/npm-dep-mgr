@@ -82,6 +82,7 @@ jobs:
     needs: release
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       id-token: write
     steps:
       - uses: actions/setup-node@v6
@@ -95,6 +96,7 @@ jobs:
     needs: release
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       packages: write
     steps:
       - uses: actions/checkout@v6
