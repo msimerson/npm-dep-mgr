@@ -2,20 +2,19 @@ name: release
 
 on:
   push:
-    branches:
-      - master
-      - main
+    branches: [main, master]
     paths:
       - package.json
 
 env:
   CI: true
 
+permissions:
+  contents: read
+
 jobs:
   version:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     outputs:
       changed: ${{ steps.check.outputs.changed }}
       version: ${{ steps.check.outputs.version }}
@@ -41,13 +40,6 @@ jobs:
     needs: version
     if: needs.version.outputs.changed == 'true'
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    services:
-      redis:
-        image: redis
-        ports:
-          - 6379:6379
     steps:
       - uses: actions/setup-node@v6
       - uses: actions/checkout@v6

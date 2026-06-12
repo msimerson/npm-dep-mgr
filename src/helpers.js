@@ -1,9 +1,8 @@
 const { spawn } = require('node:child_process')
 
-function spawnMinions(command, logger) {
-  logger.debug(`Running '${command}'.`)
-  const childProcess = spawn(command, {
-    shell: true,
+function spawnMinions(command, args, logger) {
+  logger.debug(`Running '${command} ${args.join(' ')}'.`)
+  const childProcess = spawn(command, args, {
     stdio: ['ignore', 'pipe', 'pipe'],
     env: process.env,
   })
@@ -59,41 +58,52 @@ function spawnMinions(command, logger) {
 
 // --- gitTags.js ---
 function getGitUrl(dependency) {
-  return dependency.version.replace(/#semver:[^\s]+$/, '')
+  return dependency.version.split('#semver:')[0]
 }
 
 function parseLsRemoteResponse(response) {
   return response
     .split('\n')
-    .map(
-      (line) =>
-        line.includes('refs/tags/') && /refs\/tags\/v?(.+)/.exec(line)[1],
-    )
-    .filter((ver) => ver)
+    .map((line) => {
+      const match = /refs\/tags\/v?(.+)/.exec(line)
+      return match && match[1]
+    })
+    .filter(Boolean)
 }
 
 async function getGitTags(dependency, logger) {
   const gitUrl = getGitUrl(dependency)
   logger.debug(`"${dependency.name}" is on ${gitUrl}.`)
   const response = await spawnMinions(
-    `git ls-remote --tags --refs --sort="-v:refname" ${gitUrl}`,
+    'git',
+    ['ls-remote', '--tags', '--refs', '--sort=-v:refname', '--', gitUrl],
     logger,
   )
   return parseLsRemoteResponse(response)
 }
 
 // --- npmTags.js ---
-async function getNpmTags(dependency, logger) {
-  const command = `npm view ${dependency.name} versions --json`
-  const result = await spawnMinions(command, logger)
-  let strippedColors = result.replace(/\x1B\[[0-9;]*m/g, '').replace(/'/g, '"')
-  if (!/\[/.test(strippedColors))
-    strippedColors = `[ ${strippedColors.trim()} ]`
+function npmExecutable() {
+  return process.platform === 'win32' ? 'npm.cmd' : 'npm'
+}
+
+function parseNpmResponse(result) {
+  let stripped = result.replace(/\x1B\[[0-9;]*m/g, '').replace(/'/g, '"')
+  if (!/\[/.test(stripped)) stripped = `[ ${stripped.trim()} ]`
   try {
-    return JSON.parse(strippedColors)
+    return JSON.parse(stripped)
   } catch (e) {
-    throw new Error(`Could not parse as JSON: ${strippedColors}`)
+    throw new Error(`Could not parse as JSON: ${stripped}`)
   }
+}
+
+async function getNpmTags(dependency, logger) {
+  const result = await spawnMinions(
+    npmExecutable(),
+    ['view', '--json', '--', dependency.name, 'versions'],
+    logger,
+  )
+  return parseNpmResponse(result)
 }
 
 const DEP_TYPE = {
@@ -104,6 +114,9 @@ const DEP_TYPE = {
 
 module.exports = {
   spawn: spawnMinions,
+  getGitUrl,
+  parseLsRemoteResponse,
+  parseNpmResponse,
   getGitTags,
   getNpmTags,
   DEP_TYPE,

@@ -2,6 +2,19 @@
 
 ### Unreleased
 
+### [2.0.3] - 2026-06-12
+
+- fix: CLI flags were ignored (kebab-case args now map to camelCase options)
+- fix: broken self-check caused by circular require between logic and cliHelpers
+- fix(security): remove ReDoS-prone regex in getGitUrl
+- fix(security): use execFile to avoid shell injection in e2e test
+- fix(security): drop shell when spawning git/npm to prevent command injection from package.json
+- fix(security): pass git/npm args after `--` to block option injection
+- fix: restore --ignore-opt to skip optional dependencies
+- test: expand coverage from 68% to 92%
+- fix: add newline when writing package.json
+- ci: add explicit perms (#5) (#6)
+
 ### [2.0.2] - 2026-03-31
 
 - fix: optional dependency support
@@ -55,3 +68,4 @@
 [1.2.0]: https://github.com/msimerson/npm-dep-mgr/releases/tag/v1.2.0
 [2.0.0]: https://github.com/msimerson/npm-dep-mgr/releases/tag/v2.0.0
 [2.0.2]: https://github.com/msimerson/npm-dep-mgr/releases/tag/v2.0.2
+[2.0.3]: https://github.com/msimerson/npm-dep-mgr/releases/tag/v2.0.3
